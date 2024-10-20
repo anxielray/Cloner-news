@@ -68,15 +68,40 @@ async function fetchJobIds() {
     const container = document.getElementById("jobs");
     const card = document.createElement("div");
     card.classList.add("card");
-    card.innerHTML = `
+    
+    const jobContent = `
       <h2>
         <a href="${job.url || `https://news.ycombinator.com/item?id=${job.id}`}" target="_blank">
           <h3><strong>${job.title}</strong></h3>
         </a>
         <p>Posted on ${new Date(job.time * 1000).toLocaleString()}</p>
       </h2>
-      ${job.text ? `<p>${job.text}</p>` : ''}
     `;
+  
+    const descriptionContent = job.text ? `
+      <div class="job-description" style="display: none;">
+        <p>${job.text}</p>
+      </div>
+      <button class="see-more">See more</button>
+    ` : '';
+  
+    card.innerHTML = jobContent + descriptionContent;
+  
+    if (job.text) {
+      const seeMoreButton = card.querySelector('.see-more');
+      const jobDescription = card.querySelector('.job-description');
+      
+      seeMoreButton.addEventListener('click', () => {
+        if (jobDescription.style.display === 'none') {
+          jobDescription.style.display = 'block';
+          seeMoreButton.textContent = 'See less';
+        } else {
+          jobDescription.style.display = 'none';
+          seeMoreButton.textContent = 'See more';
+        }
+      });
+    }
+  
     container.appendChild(card);
     console.log(job);
   };
