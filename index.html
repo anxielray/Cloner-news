@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Story Cards</title>
+    <title>Hacker News Clone - Stories</title>
     <link href="style.css" rel="stylesheet">
-  </head>
-  <body>
-    <div class="container" id="stories" style="align-items: center">
-      <h1>Latest Stories</h1>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Stories</a></li>
+            <li><a href="jobs.html">Jobs</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Latest Stories</h1>
+        <div id="stories"></div>
+        <button id="loadMore">Load More</button>
     </div>
-    <div id="stories"></div>
-    <button id="loadMore" onclick="loadMorePosts">Load More</button>
-    <script
-      language="javascript"
-      type="text/javascript"
-      src="script.js"
-    ></script>
-  </body>
+    <script src="script.js"></script>
+</body>
 </html>
