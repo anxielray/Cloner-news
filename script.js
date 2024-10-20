@@ -10,7 +10,7 @@ async function fetchMaxItemId() {
   return data;
 }
 
-// Fetch the item details by itemId to cofirm existence
+// Fetch the item details by itemId to confirm existence
 async function fetchItem(itemId) {
   const response = await fetch(
     `https://hacker-news.firebaseio.com/v0/item/${itemId}.json?print=pretty`
@@ -22,32 +22,37 @@ async function fetchItem(itemId) {
   return data;
 }
 
-// Load a limited number of posts
 let currentMaxId;
 const postsPerLoad = 10;
 let loadedPosts = 0;
 const collectedItems = [];
+let isInitialLoad = true;
 
 const loadMorePosts = async () => {
   try {
     if (!currentMaxId) {
       currentMaxId = await fetchMaxItemId();
     }
-
+    
     // Load posts from currentMaxId downwards
     for (
-      let itemId = currentMaxId;
-      itemId >= 0 && loadedPosts < postsPerLoad;
+      let itemId = currentMaxId - loadedPosts;
+      itemId >= 0 && loadedPosts < (isInitialLoad ? postsPerLoad : loadedPosts + postsPerLoad);
       itemId--
     ) {
       const item = await fetchItem(itemId);
-      if (item && !item.parent) {
+      if (item && !item.parent && item.title) {
         collectedItems.push(item);
         displayStories(item);
         loadedPosts++;
       }
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Short delay to avoid overwhelming the API
+      
+      // Use 5ms delay for initial load, 100ms for subsequent loads
+      const delay = isInitialLoad ? 5 : 100;
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
+    
+    isInitialLoad = false;
   } catch (error) {
     console.error("Error loading more posts:", error);
   }
@@ -60,10 +65,7 @@ const displayStories = (story) => {
   card.classList.add("card");
   card.innerHTML = `
     <h2>
-
-      <a href="${story.url}" target="blank"><h3><strong>${
-    story.title
-  }</strong></h3></a>
+      <a href="${story.url}" target="_blank"><h3><strong>${story.title}</strong></h3></a>
       <p>A ${story.type} by @${story.by}</p>
       <p>Posted on ${time(story.time)}</p>
       <p>Score: ${story.score}</p>
@@ -73,14 +75,17 @@ const displayStories = (story) => {
 };
 
 const time = (ms) => {
-  const date = new Date(ms);
+  const date = new Date(ms * 1000);
   return date.toLocaleString();
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-loadMorePosts();
+  loadMorePosts();
+  
+  // Add event listener for the Load More button
+  const loadMoreButton = document.getElementById("loadMore");
+  loadMoreButton.addEventListener("click", () => {
+    isInitialLoad = false;
+    loadMorePosts();
+  });
 });
-
-// Load more posts on button click
-const loadMoreButton = document.getElementById("loadMore");
-loadMoreButton.addEventListener("click", loadMorePosts);
