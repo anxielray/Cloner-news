@@ -60,8 +60,19 @@ const loadMorePosts = async () => {
   }
 };
 
-// Function to display a story
-const displayStories = (story) => {
+async function collectComments(parentId) {
+  const response = await fetch(
+    `https://hacker-news.firebaseio.com/v0/item/${parentId}.json?print=pretty`
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  }
+  
+  // Function to display a story
+  const displayStories = (story) => {
   const container = document.getElementById("stories");
   const card = document.createElement("div");
   card.classList.add("card");
@@ -73,21 +84,7 @@ const displayStories = (story) => {
       <p>A ${story.type} by @${story.by}</p>
       <p>Posted on ${time(story.time)}</p>
       <p>Score: ${story.score}</p>
-      <button onclick="toggleComments(${story.id})">Comments</button>
-    </h2>`;
-  container.appendChild(card);
-};
-
-const displayComments = (comment) => {
-  const container = document.getElementById("stories");
-  const card = document.createElement("div");
-  card.classList.add("card");
-  card.innerHTML = `
-    <h2>
-    <p><strong>@${comment.by}Replying to @${
-    fetchItem(comment.parent).by
-  }</strong></p>
-      <p>${story.text}</p>
+      <a href="comments.html"><button id="comment-button" onclick="toggleComments(${story.id}, ${story.kids})">Comments</button></a>
     </h2>`;
   container.appendChild(card);
 };
@@ -108,11 +105,6 @@ loadMoreButton.addEventListener("click", () => {
   loadedPosts = 0;
   loadMorePosts();
 });
-
-// function toggleMenu() {
-//   const menu = document.getElementById("menu");
-//   menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-// }
 
 function toggleMenu() {
   const menu = document.getElementById("menu");
