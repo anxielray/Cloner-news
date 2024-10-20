@@ -27,6 +27,7 @@ const postsPerLoad = 10;
 let loadedPosts = 0;
 const collectedItems = [];
 let isInitialLoad = true;
+let latestLoadedId;
 
 const loadMorePosts = async () => {
   try {
@@ -53,6 +54,10 @@ const loadMorePosts = async () => {
     }
     
     isInitialLoad = false;
+
+    if (collectedItems.length > 0) {
+      updateLatestLoadedId(collectedItems);
+    }
   } catch (error) {
     console.error("Error loading more posts:", error);
   }
@@ -79,6 +84,40 @@ const time = (ms) => {
   return date.toLocaleString();
 };
 
+async function checkForNewStories() {
+  try {
+    const maxItemId = await fetchMaxItemId();
+    
+    if (!latestLoadedId) {
+      latestLoadedId = collectedItems[0]?.id || maxItemId;
+    }
+
+    if (maxItemId > latestLoadedId) {
+      const newStoriesCount = maxItemId - latestLoadedId;
+      notifyUser(newStoriesCount);
+    }
+  } catch (error) {
+    console.error("Error checking for new stories:", error);
+  }
+}
+
+function notifyUser(count) {
+  const notificationElement = document.getElementById("newStoriesNotification");
+  notificationElement.textContent = `${count} new stories available!`;
+  notificationElement.style.display = "block";
+
+  // Optionally, you can add a click event to refresh the page or load new stories
+  notificationElement.onclick = () => {
+    location.reload(); // Or call a function to load new stories
+  };
+}
+
+function updateLatestLoadedId(newItems) {
+  if (newItems.length > 0) {
+    latestLoadedId = Math.max(latestLoadedId, ...newItems.map(item => item.id));
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadMorePosts();
   
@@ -88,4 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     isInitialLoad = false;
     loadMorePosts();
   });
+
+  // Start checking for updates every 5 seconds
+  setInterval(checkForNewStories, 5000);
 });
