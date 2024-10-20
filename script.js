@@ -36,12 +36,16 @@ const loadMorePosts = async () => {
     }
 
     // Load posts from currentMaxId downwards
-    for (let itemId = currentMaxId; itemId >= 0 && loadedPosts < postsPerLoad; itemId--) {
+    for (
+      let itemId = currentMaxId;
+      itemId >= 0 && loadedPosts < postsPerLoad;
+      itemId--
+    ) {
       const item = await fetchItem(itemId);
       if (item && !item.parent && item.title) {
         displayStories(item);
         loadedPosts++;
-      }else if (item && item.parent) {
+      } else if (item && item.parent) {
         comments.push(item);
       }
       await new Promise((resolve) => setTimeout(resolve, 100)); // Short delay to avoid overwhelming the API
@@ -63,7 +67,9 @@ const displayStories = (story) => {
   card.classList.add("card");
   card.innerHTML = `
     <h2>
-      <a href="${story.url}" target="_blank"><h3><strong>${story.title}</strong></h3></a>
+      <a href="${story.url}" target="_blank"><h3><strong>${
+    story.title
+  }</strong></h3></a>
       <p>A ${story.type} by @${story.by}</p>
       <p>Posted on ${time(story.time)}</p>
       <p>Score: ${story.score}</p>
@@ -78,12 +84,13 @@ const displayComments = (comment) => {
   card.classList.add("card");
   card.innerHTML = `
     <h2>
-    <p><strong>@${comment.by}Replying to @${fetchItem(comment.parent).by}</strong></p>
+    <p><strong>@${comment.by}Replying to @${
+    fetchItem(comment.parent).by
+  }</strong></p>
       <p>${story.text}</p>
     </h2>`;
   container.appendChild(card);
 };
-
 
 const time = (ms) => {
   const date = new Date(ms * 1000);
@@ -101,3 +108,16 @@ loadMoreButton.addEventListener("click", () => {
   loadedPosts = 0;
   loadMorePosts();
 });
+
+// function toggleMenu() {
+//   const menu = document.getElementById("menu");
+//   menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+// }
+
+function toggleMenu() {
+  const menu = document.getElementById("menu");
+  menu.classList.toggle("show");
+  const ham = document.getElementById("ham");
+  ham.style.position = "relative";
+  ham.style.zIndex = 10;
+}

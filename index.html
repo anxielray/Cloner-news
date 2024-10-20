@@ -1,17 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Story Cards</title>
     <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-    <div class="container" id="stories">
-        <h1>LATEST NEWS</h1>
+  </head>
+  <body>
+    <header>
+      <h1>LATEST NEWS!</h1>
+      <div class="hamburger" onclick="toggleMenu()" id="ham">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+      </div>
+    </header>
+    <div class="menu" id="menu">
+      <br />
+      <a href="#section1">Stories</a>
+      <a href="#section2">Jobs</a>
+      <a href="#section3">Polls</a>
     </div>
+    <div class="container" id="stories"></div>
     <div id="stories"></div>
     <button id="loadMore" onclick="loadMorePosts()">Load More</button>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
