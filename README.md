@@ -28,7 +28,7 @@
 
 3. To display the site just double-click the index.html file 
 
-## Test
+## Test(skeptical)
 
 * To run the test file use the following command:
 
